@@ -1,0 +1,47 @@
+{% extends "hotels/base.html" %}
+{% block title %}{{ hotel.name }}{% endblock %}
+{% block content %}
+{% if hotel.image_url %}<img class="cover" src="{{ hotel.image_url }}" alt="{{ hotel.name }}">{% endif %}
+<h1>{{ hotel.name }}</h1>
+<p class="muted">{{ hotel.city }} · {{ hotel.address }}
+  {% if hotel.average_rating %} · <span class="badge">★ {{ hotel.average_rating|floatformat:1 }}</span>{% endif %}</p>
+<p>{{ hotel.description }}</p>
+
+<form method="get" class="card">
+  {{ form.non_field_errors }}
+  <div class="row">
+    <div><label>Check-in</label>{{ form.check_in }}</div>
+    <div><label>Check-out</label>{{ form.check_out }}</div>
+    <div><label>Guests</label>{{ form.guests }}</div>
+    <button class="btn">Check availability</button>
+  </div>
+</form>
+
+<h2>Rooms</h2>
+{% for room in rooms %}
+<div class="card">
+  <h3>{{ room.get_room_type_display }} · Room {{ room.number }}</h3>
+  <p class="muted">Sleeps {{ room.capacity }} · {{ currency }}{{ room.price_per_night }}/night</p>
+  <p>{{ room.description }}</p>
+  {% if room.available is None %}
+    <a class="btn" href="{% url 'book_room' room.id %}">Book</a>
+    <small class="muted">Pick dates above to check availability.</small>
+  {% elif room.available %}
+    <span class="ok">Available</span> · {{ nights }} night{{ nights|pluralize }} = <strong>{{ currency }}{{ room.total }}</strong>
+    <a class="btn" href="{% url 'book_room' room.id %}?{{ qs }}">Book now</a>
+  {% else %}
+    <span class="bad">Not available for these dates</span>
+  {% endif %}
+</div>
+{% empty %}<p class="muted">No rooms listed yet.</p>{% endfor %}
+
+<h2>Guest reviews</h2>
+{% if can_review %}<p><a class="btn" href="{% url 'add_review' hotel.pk %}">Write a review</a></p>{% endif %}
+{% for r in reviews %}
+<div class="card">
+  <strong>{{ r.user.username }}</strong> <span class="badge">{{ r.rating }}/5</span>
+  <span class="muted">· {{ r.created_at|date:"M j, Y" }}</span>
+  <p>{{ r.comment|linebreaksbr }}</p>
+</div>
+{% empty %}<p class="muted">No reviews yet.</p>{% endfor %}
+{% endblock %}

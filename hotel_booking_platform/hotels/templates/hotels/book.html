@@ -1,0 +1,16 @@
+{% extends "hotels/base.html" %}
+{% block content %}
+<h1>Book {{ room.hotel.name }}</h1>
+<p class="muted">{{ room.get_room_type_display }} · Room {{ room.number }} · {{ currency }}{{ room.price_per_night }}/night · sleeps {{ room.capacity }}</p>
+<form method="post" class="card">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="row">
+    <div><label>Check-in</label>{{ form.check_in }}{{ form.check_in.errors }}</div>
+    <div><label>Check-out</label>{{ form.check_out }}{{ form.check_out.errors }}</div>
+    <div><label>Guests</label>{{ form.guests }}{{ form.guests.errors }}</div>
+  </div>
+  <p class="muted">Your room is held for a short time while you complete payment.</p>
+  <button class="btn">Continue to payment</button>
+</form>
+{% endblock %}

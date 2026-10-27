@@ -1,0 +1,30 @@
+{% extends "hotels/base.html" %}
+{% block content %}
+<h1>Find your stay</h1>
+<form method="get" class="card">
+  {{ form.non_field_errors }}
+  <div class="row">
+    <div><label>City</label>{{ form.city }}</div>
+    <div><label>Check-in</label>{{ form.check_in }}</div>
+    <div><label>Check-out</label>{{ form.check_out }}</div>
+    <div><label>Guests</label>{{ form.guests }}</div>
+    <button class="btn">Search</button>
+  </div>
+  {{ form.check_in.errors }}{{ form.check_out.errors }}
+</form>
+
+{% for hotel in hotels %}
+<div class="card">
+  {% if hotel.image_url %}<img class="cover" src="{{ hotel.image_url }}" alt="{{ hotel.name }}">{% endif %}
+  <h2><a href="{% url 'hotel_detail' hotel.pk %}{% if qs %}?{{ qs }}{% endif %}">{{ hotel.name }}</a></h2>
+  <p class="muted">{{ hotel.city }} · {{ hotel.address }}</p>
+  <p>{{ hotel.description|truncatechars:140 }}</p>
+  <p>
+    {% if hotel.average_rating %}<span class="badge">★ {{ hotel.average_rating|floatformat:1 }}</span>{% endif %}
+    {% if hotel.starting_price %}from <strong>{{ currency }}{{ hotel.starting_price }}</strong>/night{% endif %}
+  </p>
+</div>
+{% empty %}
+<p class="muted">No hotels match your search.</p>
+{% endfor %}
+{% endblock %}

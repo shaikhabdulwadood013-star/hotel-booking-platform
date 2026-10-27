@@ -1,0 +1,20 @@
+{% extends "hotels/base.html" %}
+{% block content %}
+<h1>My bookings</h1>
+{% for b in bookings %}
+<div class="card">
+  <h3>{{ b.room.hotel.name }} · Room {{ b.room.number }} <span class="badge">{{ b.get_status_display }}</span></h3>
+  <p>{{ b.check_in }} → {{ b.check_out }} · {{ b.guests }} guest{{ b.guests|pluralize }} · <strong>{{ currency }}{{ b.total_price }}</strong></p>
+  {% for p in b.payments.all %}
+    <p class="muted">Payment {{ p.transaction_id|default:"-" }} · {{ p.get_status_display }}{% if p.card_last4 %} · card ••••{{ p.card_last4 }}{% endif %}</p>
+  {% endfor %}
+  {% if b.can_pay %}<a class="btn" href="{% url 'pay_booking' b.pk %}">Pay now</a>{% endif %}
+  {% if b.can_cancel %}
+    <form method="post" action="{% url 'cancel_booking' b.pk %}" style="display:inline" onsubmit="return confirm('Cancel this booking?')">
+      {% csrf_token %}<button class="btn danger">Cancel</button>
+    </form>
+  {% endif %}
+  {% if b.can_review %}<a class="btn" href="{% url 'add_review' b.room.hotel_id %}">Review stay</a>{% endif %}
+</div>
+{% empty %}<p class="muted">You have no bookings yet. <a href="{% url 'hotel_list' %}">Find a hotel</a>.</p>{% endfor %}
+{% endblock %}

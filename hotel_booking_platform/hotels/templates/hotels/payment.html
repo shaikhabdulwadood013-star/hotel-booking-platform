@@ -1,0 +1,21 @@
+{% extends "hotels/base.html" %}
+{% block content %}
+<h1>Payment</h1>
+<div class="card">
+  <strong>{{ booking.room.hotel.name }}</strong> · Room {{ booking.room.number }}<br>
+  {{ booking.check_in }} → {{ booking.check_out }} ({{ booking.nights }} night{{ booking.nights|pluralize }})<br>
+  Total: <strong>{{ currency }}{{ booking.total_price }}</strong>
+</div>
+<form method="post" class="card">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <p><label>Name on card</label><br>{{ form.card_name }}{{ form.card_name.errors }}</p>
+  <p><label>Card number</label><br>{{ form.card_number }}{{ form.card_number.errors }}</p>
+  <div class="row">
+    <div><label>Expiry (MM/YY)</label>{{ form.expiry }}{{ form.expiry.errors }}</div>
+    <div><label>CVC</label>{{ form.cvc }}{{ form.cvc.errors }}</div>
+  </div>
+  <p class="muted">Demo mode: use 4242 4242 4242 4242 (success) or 4000 0000 0000 0002 (declined).</p>
+  <button class="btn">Pay {{ currency }}{{ booking.total_price }}</button>
+</form>
+{% endblock %}

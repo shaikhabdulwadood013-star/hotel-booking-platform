@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ site_name }}{% endblock %}</title>
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --text:#1c2230; --muted:#6a7285; --brand:#2f5bea; --ok:#14804a; --bad:#c0392b; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--text); }
+  nav { background:var(--card); border-bottom:1px solid #e3e6ee; padding:12px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  nav a { color:var(--text); text-decoration:none; } nav .brand { font-weight:700; color:var(--brand); margin-right:auto; }
+  nav form { margin:0; } nav button { background:none; border:0; cursor:pointer; font:inherit; color:var(--text); }
+  main { max-width:900px; margin:24px auto; padding:0 16px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+  .btn { display:inline-block; background:var(--brand); color:#fff; border:0; padding:9px 16px; border-radius:8px; text-decoration:none; cursor:pointer; font:inherit; }
+  .btn.danger { background:var(--bad); }
+  .muted { color:var(--muted); } .ok { color:var(--ok); font-weight:600; } .bad { color:var(--bad); font-weight:600; }
+  input, select, textarea { padding:8px; border:1px solid #cfd4e0; border-radius:8px; font:inherit; max-width:100%; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:end; } .row label { display:block; font-size:.85rem; color:var(--muted); }
+  .msg { padding:10px 14px; border-radius:8px; margin-bottom:10px; background:#e8efff; } .msg.error { background:#fde8e6; } .msg.success { background:#e3f6ec; }
+  .errorlist { color:var(--bad); list-style:none; padding:0; margin:4px 0; }
+  img.cover { width:100%; max-height:220px; object-fit:cover; border-radius:10px; }
+  .badge { font-size:.8rem; padding:2px 8px; border-radius:99px; background:#eceffa; }
+</style>
+</head>
+<body>
+<nav>
+  <a class="brand" href="{% url 'hotel_list' %}">{{ site_name }}</a>
+  <a href="{% url 'hotel_list' %}">Hotels</a>
+  {% if user.is_authenticated %}
+    <a href="{% url 'my_bookings' %}">My bookings</a>
+    {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Log out ({{ user.username }})</button></form>
+  {% else %}
+    <a href="{% url 'login' %}">Log in</a>
+    <a href="{% url 'register' %}">Sign up</a>
+  {% endif %}
+</nav>
+<main>
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>
